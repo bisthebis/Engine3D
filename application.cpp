@@ -69,28 +69,8 @@ bool Application::init() {
     static const char *vertexShader = "#version 330 core\n layout (location = 0) in vec3 Pos;\n layout (location = 1) in vec3 Col;\n out vec3 outColor;\n uniform mat4 projection; \n void main() { gl_Position = projection * vec4(Pos, 1.0); outColor = Col; }";
     static const char *fragmentShader = "#version 330 core\n in vec3 outColor; \n out vec4 FragColor; \n void main() { FragColor = vec4(outColor, 1.0); }";
 
-    unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
-    unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);
-
-    glShaderSource(vertex, 1, &vertexShader, nullptr);
-    glCompileShader(vertex);
-
-    glShaderSource(fragment, 1, &fragmentShader, nullptr);
-    glCompileShader(fragment);
-
-    shader = glCreateProgram();
-
-    glAttachShader(shader, vertex);
-    glAttachShader(shader, fragment);
-
-    glLinkProgram(shader);
-    glUseProgram(shader);
-
-    /* Cleanup AFTER linking */
-    glDetachShader(shader, vertex);
-    glDeleteShader(vertex);
-    glDetachShader(shader, fragment);
-    glDeleteShader(fragment);
+    shader = std::make_unique<Shader>(std::string(vertexShader), std::string(fragmentShader));
+    glUseProgram(shader->getProgramId());
 
 
     //Create VAO and do the bindings
@@ -119,7 +99,7 @@ bool Application::init() {
 void Application::draw() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    unsigned int projectionLocation = glGetUniformLocation(shader, "projection");
+    unsigned int projectionLocation = glGetUniformLocation(shader->getProgramId(), "projection");
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
     glBindVertexArray(VAO);
@@ -173,6 +153,5 @@ void Application::processEvent(const sf::Event &event) {
 
 void Application::cleanup() {
     glDeleteBuffers(2, VBO);
-    glDeleteProgram(shader);
     glDeleteVertexArrays(1, &VAO);
 }

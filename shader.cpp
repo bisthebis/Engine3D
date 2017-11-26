@@ -21,32 +21,37 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#ifndef APPLICATION_H
-#define APPLICATION_H
-
-#include <SFML/Window.hpp>
-#include <memory>
-#include <glm/mat4x4.hpp>
 #include "shader.h"
+#include <glad/glad.h>
 
-class Application
+Shader::Shader(const std::string &vertex, const std::string &frag)
 {
+    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-public:
-    Application();
-    int run();
+    const GLchar *vertexCStr = vertex.data();
+    glShaderSource(vertexShader, 1, &vertexCStr, nullptr);
+    glCompileShader(vertexShader);
 
-private:
-    bool init();
-    void draw();
-    void processEvent(const sf::Event& e);
-    void cleanup();
+    const GLchar *fragmentCStr = frag.data();
+    glShaderSource(fragmentShader, 1, &fragmentCStr, nullptr);
+    glCompileShader(fragmentShader);
 
-    std::unique_ptr<sf::Window> window;
-    std::unique_ptr<Shader> shader;
-    unsigned int VBO[2];
-    unsigned int VAO;
-    glm::mat4 projection;
-};
+    program = glCreateProgram();
 
-#endif // APPLICATION_H
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
+
+    glLinkProgram(program);
+    glUseProgram(program);
+
+    /* Cleanup AFTER linking */
+    glDetachShader(program, vertexShader);
+    glDeleteShader(vertexShader);
+    glDetachShader(program, fragmentShader);
+    glDeleteShader(fragmentShader);
+}
+
+Shader::~Shader() {
+    glDeleteProgram(program);
+}

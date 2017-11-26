@@ -21,32 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#ifndef SHADER_H
+#define SHADER_H
 
-#include <SFML/Window.hpp>
-#include <memory>
-#include <glm/mat4x4.hpp>
-#include "shader.h"
+#include <string>
 
-class Application
+class Shader
 {
-
 public:
-    Application();
-    int run();
-
+    Shader(const std::string& vertex, const std::string& frag);
+    ~Shader();
+    unsigned int getProgramId() const {return program;}
 private:
-    bool init();
-    void draw();
-    void processEvent(const sf::Event& e);
-    void cleanup();
-
-    std::unique_ptr<sf::Window> window;
-    std::unique_ptr<Shader> shader;
-    unsigned int VBO[2];
-    unsigned int VAO;
-    glm::mat4 projection;
+    unsigned int program;
 };
 
-#endif // APPLICATION_H
+#endif // SHADER_H
