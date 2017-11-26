@@ -51,40 +51,8 @@ std::unique_ptr<Shader> makeShaderFromSource(const std::string &vertexSource, co
 
 Shader::Shader(const std::string &vertex, const std::string &frag)
 {
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-    const GLchar *vertexCStr = vertex.data();
-    glShaderSource(vertexShader, 1, &vertexCStr, nullptr);
-    glCompileShader(vertexShader);
-
-    {
-        int success;
-        char infolog[512];
-        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            glGetShaderInfoLog(vertexShader, 512, nullptr, infolog);
-            std::string errorLog = std::string("Error compiling vertex shader : ") + infolog;
-            throw std::runtime_error(errorLog);
-        }
-    }
-
-    const GLchar *fragmentCStr = frag.data();
-    glShaderSource(fragmentShader, 1, &fragmentCStr, nullptr);
-    glCompileShader(fragmentShader);
-
-    {
-        int success;
-        char infolog[512];
-        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            glGetShaderInfoLog(fragmentShader, 512, nullptr, infolog);
-            std::string errorLog = std::string("Error compiling fragment shader : ") + infolog;
-            throw std::runtime_error(errorLog);
-        }
-    }
+    unsigned int vertexShader = compileShader(GL_VERTEX_SHADER, vertex);
+    unsigned int fragmentShader = compileShader(GL_FRAGMENT_SHADER, frag);
 
     program = glCreateProgram();
 
@@ -116,4 +84,26 @@ Shader::Shader(const std::string &vertex, const std::string &frag)
 
 Shader::~Shader() {
     glDeleteProgram(program);
+}
+
+
+unsigned int compileShader(GLenum type, const std::string &source) {
+    unsigned int result = glCreateShader(type);
+    const GLchar *source_data = source.data();
+    glShaderSource(result, 1, &source_data, nullptr);
+    glCompileShader(result);
+
+    {
+        int success;
+        char infolog[512];
+        glGetShaderiv(result, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(result, 512, nullptr, infolog);
+            std::string errorLog = std::string("Error compiling fragment shader : ") + infolog;
+            throw std::runtime_error(errorLog);
+        }
+    }
+
+    return result;
 }

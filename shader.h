@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include <string>
 #include <memory>
+#include <glad/glad.h>
 
 class Shader
 {
@@ -37,6 +38,7 @@ private:
     unsigned int program;
 };
 
+unsigned int compileShader(GLenum type, const std::string& source);
 std::string readFile(const std::string& path);
 std::unique_ptr<Shader> makeShaderFromFile(const std::string& vertexPath, const std::string& fragmentPath);
 std::unique_ptr<Shader> makeShaderFromSource(const std::string& vertexCode, const std::string& fragmentCode);
