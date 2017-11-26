@@ -144,6 +144,8 @@ void Application::processEvent(const sf::Event &event) {
     case sf::Event::Closed:
         window->close();
         break;
+    case sf::Event::Resized:
+        glViewport(0, 0, event.size.width, event.size.height);
     default:
         break;
     }
