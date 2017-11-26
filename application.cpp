@@ -89,13 +89,11 @@ bool Application::init() {
     glDetachShader(shader, fragment);
     glDeleteShader(fragment);
 
-    return true;
-}
 
-void Application::draw() {
-    glClear(GL_COLOR_BUFFER_BIT);
+    //Create VAO and do the bindings
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
 
-    /* Triangle */
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -104,6 +102,18 @@ void Application::draw() {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
 
+    //Cleanup
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+
+    return true;
+}
+
+void Application::draw() {
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     window->display();
@@ -142,4 +152,5 @@ void Application::processEvent(const sf::Event &event) {
 void Application::cleanup() {
     glDeleteBuffers(2, VBO);
     glDeleteProgram(shader);
+    glDeleteVertexArrays(1, &VAO);
 }

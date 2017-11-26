@@ -43,6 +43,7 @@ private:
     std::unique_ptr<sf::Window> window;
     unsigned int VBO[2];
     unsigned int shader;
+    unsigned int VAO;
 };
 
 #endif // APPLICATION_H
