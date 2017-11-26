@@ -24,6 +24,24 @@ SOFTWARE.
 #include "shader.h"
 #include <glad/glad.h>
 #include <stdexcept>
+#include <fstream>
+#include <sstream>
+
+std::string readFile(const std::string &path) {
+    std::ifstream file;
+    file.open(path);
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
+
+std::unique_ptr<Shader> makeShaderFromFile(const std::string &vertexPath, const std::string &fragmentPath) {
+    return std::make_unique<Shader>(readFile(vertexPath), readFile(fragmentPath));
+}
+
+std::unique_ptr<Shader> makeShaderFromSource(const std::string &vertexSource, const std::string &fragmentSource) {
+    return std::make_unique<Shader>(vertexSource, fragmentSource);
+}
 
 Shader::Shader(const std::string &vertex, const std::string &frag)
 {

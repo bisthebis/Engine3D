@@ -25,6 +25,7 @@ SOFTWARE.
 #define SHADER_H
 
 #include <string>
+#include <memory>
 
 class Shader
 {
@@ -35,5 +36,9 @@ public:
 private:
     unsigned int program;
 };
+
+std::string readFile(const std::string& path);
+std::unique_ptr<Shader> makeShaderFromFile(const std::string& vertexPath, const std::string& fragmentPath);
+std::unique_ptr<Shader> makeShaderFromSource(const std::string& vertexCode, const std::string& fragmentCode);
 
 #endif // SHADER_H

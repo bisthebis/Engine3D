@@ -69,7 +69,7 @@ bool Application::init() {
     static const char *vertexShader = "#version 330 core\n layout (location = 0) in vec3 Pos;\n layout (location = 1) in vec3 Col;\n out vec3 outColor;\n uniform mat4 projection; \n void main() { gl_Position = projection * vec4(Pos, 1.0); outColor = Col; }";
     static const char *fragmentShader = "#version 330 core\n in vec3 outColor; \n out vec4 FragColor; \n void main() { FragColor = vec4(outColor, 1.0); }";
 
-    shader = std::make_unique<Shader>(std::string(vertexShader), std::string(fragmentShader));
+    shader = makeShaderFromSource(std::string(vertexShader), std::string(fragmentShader));
     glUseProgram(shader->getProgramId());
 
 
