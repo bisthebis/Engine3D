@@ -21,41 +21,57 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#include "vertexbuffer.h"
+#include "vertexarray.h"
 #include <glad/glad.h>
+#include <stdexcept>
 
-VertexBuffer::VertexBuffer() : enabled(false) {}
+VertexArray::VertexArray() : enabled(false)
+{
 
-VertexBuffer::VertexBuffer(unsigned int id) : _id(id)
-{}
+}
 
-VertexBuffer::~VertexBuffer() {
+VertexArray::~VertexArray() {
     if (enabled)
-        glDeleteBuffers(1, &_id);
+        glDeleteVertexArrays(1, &vao);
 }
 
-unsigned int VertexBuffer::id() const {
-    return enabled ? _id : 0;
-}
-
-VertexBuffer::VertexBuffer(VertexBuffer &&rhs) {
-    _id = rhs.id();
-    this->enabled = rhs.enabled;
+VertexArray::VertexArray(VertexArray &&rhs) {
+    enabled = rhs.enabled;
+    vbos = std::move(rhs.vbos);
+    vao = rhs.vao;
     rhs.enabled = false;
 }
 
-VertexBuffer& VertexBuffer::operator =(VertexBuffer&& rhs) {
-    _id = rhs.id();
-    this->enabled = rhs.enabled;
+VertexArray& VertexArray::operator=(VertexArray &&rhs) {
+    enabled = rhs.enabled;
+    vbos = std::move(rhs.vbos);
+    vao = rhs.vao;
     rhs.enabled = false;
     return *this;
 }
 
-VertexBuffer createArrayBuffer(float *data, unsigned int size) {
-    unsigned int id;
-    glGenBuffers(1, &id);
-    glBindBuffer(GL_ARRAY_BUFFER, id);
-    glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+void VertexArray::initEmpty() {
+    if (enabled) {
+        glDeleteVertexArrays(1, &vao);
+    }
 
-    return VertexBuffer(id);
+    glGenVertexArrays(1, &vao);
+    enabled = true;
+}
+
+void VertexArray::bind() {
+    if (enabled == false)
+        throw std::runtime_error("Trying to bind an invalid VAO");
+
+    glBindVertexArray(vao);
+}
+
+void VertexArray::unbind() {
+    glBindVertexArray(0);
+}
+
+void VertexArray::takeVBO(VertexBuffer &&vbo) {
+    //Pushing an empty buffer then swap
+    vbos.push_back(std::move(vbo));
+    //vbos[vbos.size()-1] = std::move(vbo);
 }

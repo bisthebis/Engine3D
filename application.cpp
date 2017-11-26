@@ -41,6 +41,8 @@ bool Application::init() {
 
     glClearColor(0, 0.5, 1.0, 1.0);
 
+    VertexBuffer VBO[2];
+
     //Vertices
     float vertices[] = {
         -0.5f, -0.5f, 1.0f,
@@ -59,9 +61,8 @@ bool Application::init() {
 
     VBO[1] = createArrayBuffer(colors, sizeof(vertices));
 
-    //Create VAO and do the bindings
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    VAO.initEmpty();
+    VAO.bind();
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0].id());
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -71,9 +72,8 @@ bool Application::init() {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
 
-    //Cleanup
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    VAO.takeVBO(std::move(VBO[0]));
+    VAO.takeVBO(std::move(VBO[1]));
 
     //Shader
     shader = makeShaderFromFile("shaders/default.vert", "shaders/default.frag");
@@ -91,7 +91,7 @@ void Application::draw() {
     unsigned int projectionLocation = glGetUniformLocation(shader->getProgramId(), "projection");
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
-    glBindVertexArray(VAO);
+    VAO.bind();
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     window->display();
@@ -145,5 +145,4 @@ void Application::processEvent(const sf::Event &event) {
 }
 
 void Application::cleanup() {
-    glDeleteVertexArrays(1, &VAO);
 }

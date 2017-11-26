@@ -29,6 +29,7 @@ SOFTWARE.
 #include <glm/mat4x4.hpp>
 #include "shader.h"
 #include "vertexbuffer.h"
+#include "vertexarray.h"
 
 class Application
 {
@@ -45,8 +46,7 @@ private:
 
     std::unique_ptr<sf::Window> window;
     std::unique_ptr<Shader> shader;
-    VertexBuffer VBO[2];
-    unsigned int VAO;
+    VertexArray VAO;
     glm::mat4 projection;
 };
 

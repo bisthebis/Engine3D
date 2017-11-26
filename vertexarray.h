@@ -21,41 +21,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#ifndef VERTAXARRAY_H
+#define VERTAXARRAY_H
+
 #include "vertexbuffer.h"
-#include <glad/glad.h>
+#include <vector>
 
-VertexBuffer::VertexBuffer() : enabled(false) {}
+class VertexArray
+{
+public:
+    VertexArray();
+    VertexArray(const VertexArray&) = delete;
+    VertexArray(VertexArray&& rhs);
+    VertexArray& operator=(const VertexArray&) = delete;
+    VertexArray& operator=(VertexArray&& rhs);
+    ~VertexArray();
 
-VertexBuffer::VertexBuffer(unsigned int id) : _id(id)
-{}
+    void initEmpty();
+    void bind();
+    void unbind();
+    void takeVBO(VertexBuffer&& vbo);
 
-VertexBuffer::~VertexBuffer() {
-    if (enabled)
-        glDeleteBuffers(1, &_id);
-}
+private:
+    std::vector<VertexBuffer> vbos;
+    unsigned int vao;
+    bool enabled = true;
 
-unsigned int VertexBuffer::id() const {
-    return enabled ? _id : 0;
-}
+};
 
-VertexBuffer::VertexBuffer(VertexBuffer &&rhs) {
-    _id = rhs.id();
-    this->enabled = rhs.enabled;
-    rhs.enabled = false;
-}
-
-VertexBuffer& VertexBuffer::operator =(VertexBuffer&& rhs) {
-    _id = rhs.id();
-    this->enabled = rhs.enabled;
-    rhs.enabled = false;
-    return *this;
-}
-
-VertexBuffer createArrayBuffer(float *data, unsigned int size) {
-    unsigned int id;
-    glGenBuffers(1, &id);
-    glBindBuffer(GL_ARRAY_BUFFER, id);
-    glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-
-    return VertexBuffer(id);
-}
+#endif // VERTAXARRAY_H
