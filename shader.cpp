@@ -23,6 +23,7 @@ SOFTWARE.
 */
 #include "shader.h"
 #include <glad/glad.h>
+#include <stdexcept>
 
 Shader::Shader(const std::string &vertex, const std::string &frag)
 {
@@ -33,9 +34,33 @@ Shader::Shader(const std::string &vertex, const std::string &frag)
     glShaderSource(vertexShader, 1, &vertexCStr, nullptr);
     glCompileShader(vertexShader);
 
+    {
+        int success;
+        char infolog[512];
+        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(vertexShader, 512, nullptr, infolog);
+            std::string errorLog = std::string("Error compiling vertex shader : ") + infolog;
+            throw std::runtime_error(errorLog);
+        }
+    }
+
     const GLchar *fragmentCStr = frag.data();
     glShaderSource(fragmentShader, 1, &fragmentCStr, nullptr);
     glCompileShader(fragmentShader);
+
+    {
+        int success;
+        char infolog[512];
+        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(fragmentShader, 512, nullptr, infolog);
+            std::string errorLog = std::string("Error compiling fragment shader : ") + infolog;
+            throw std::runtime_error(errorLog);
+        }
+    }
 
     program = glCreateProgram();
 
@@ -43,6 +68,19 @@ Shader::Shader(const std::string &vertex, const std::string &frag)
     glAttachShader(program, fragmentShader);
 
     glLinkProgram(program);
+
+    {
+        int success;
+        char infolog[512];
+        glGetProgramiv(program, GL_LINK_STATUS, &success);
+        if (!success)
+        {
+            glGetProgramInfoLog(program, 512, nullptr, infolog);
+            std::string errorLog = std::string("Error linking shader : ") + infolog;
+            throw std::runtime_error(errorLog);
+        }
+    }
+
     glUseProgram(program);
 
     /* Cleanup AFTER linking */
