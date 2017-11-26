@@ -22,11 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 #include "application.h"
-
 #include <glad/glad.h>
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 
-Application::Application()
+Application::Application() : projection(1.0)
 {
 }
 
@@ -44,9 +47,9 @@ bool Application::init() {
 
     //Vertices
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+        -0.5f, -0.5f, 1.0f,
+         0.5f, -0.5f, 1.0f,
+         0.0f,  0.5f, 1.0f
     };
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
@@ -63,7 +66,7 @@ bool Application::init() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
     //Shader
-    static const char *vertexShader = "#version 330 core\n layout (location = 0) in vec3 Pos;\n layout (location = 1) in vec3 Col;\n out vec3 outColor; \n void main() { gl_Position = vec4(Pos, 1.0); outColor = Col; }";
+    static const char *vertexShader = "#version 330 core\n layout (location = 0) in vec3 Pos;\n layout (location = 1) in vec3 Col;\n out vec3 outColor;\n uniform mat4 projection; \n void main() { gl_Position = projection * vec4(Pos, 1.0); outColor = Col; }";
     static const char *fragmentShader = "#version 330 core\n in vec3 outColor; \n out vec4 FragColor; \n void main() { FragColor = vec4(outColor, 1.0); }";
 
     unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -106,12 +109,18 @@ bool Application::init() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    //Init projection
+    projection = glm::ortho(-1.f, 1.0f, -1.0f, 1.0f, -1.0f, 1.f);
+    //projection = glm::ortho(-1.f, 1.0f, -1.0f, 1.0f);
 
     return true;
 }
 
 void Application::draw() {
     glClear(GL_COLOR_BUFFER_BIT);
+
+    unsigned int projectionLocation = glGetUniformLocation(shader, "projection");
+    glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -145,7 +154,18 @@ void Application::processEvent(const sf::Event &event) {
         window->close();
         break;
     case sf::Event::Resized:
+    {
+        float w = float(event.size.width);
+        float h = float(event.size.height);
+        float ratio = w/h;
         glViewport(0, 0, event.size.width, event.size.height);
+        if (ratio > 1)
+            projection = glm::ortho(-ratio, ratio, -1.f, 1.f, -1.0f, 1.0f);
+        else
+            projection = glm::ortho(-1.f, 1.f, -1.f/ratio, 1.f/ratio, -1.0f, 1.0f);
+
+    }
+        break;
     default:
         break;
     }

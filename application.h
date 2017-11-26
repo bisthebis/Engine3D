@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include <SFML/Window.hpp>
 #include <memory>
+#include <glm/mat4x4.hpp>
 
 class Application
 {
@@ -44,6 +45,7 @@ private:
     unsigned int VBO[2];
     unsigned int shader;
     unsigned int VAO;
+    glm::mat4 projection;
 };
 
 #endif // APPLICATION_H
