@@ -65,14 +65,6 @@ bool Application::init() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
-    //Shader
-    static const char *vertexShader = "#version 330 core\n layout (location = 0) in vec3 Pos;\n layout (location = 1) in vec3 Col;\n out vec3 outColor;\n uniform mat4 projection; \n void main() { gl_Position = projection * vec4(Pos, 1.0); outColor = Col; }";
-    static const char *fragmentShader = "#version 330 core\n in vec3 outColor; \n out vec4 FragColor; \n void main() { FragColor = vec4(outColor, 1.0); }";
-
-    shader = makeShaderFromSource(std::string(vertexShader), std::string(fragmentShader));
-    glUseProgram(shader->getProgramId());
-
-
     //Create VAO and do the bindings
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -88,6 +80,10 @@ bool Application::init() {
     //Cleanup
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    //Shader
+    shader = makeShaderFromFile("shaders/default.vert", "shaders/default.frag");
+    glUseProgram(shader->getProgramId());
 
     //Init projection
     projection = glm::ortho(-1.f, 1.0f, -1.0f, 1.0f, -1.0f, 1.f);

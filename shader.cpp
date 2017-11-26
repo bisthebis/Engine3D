@@ -30,13 +30,18 @@ SOFTWARE.
 std::string readFile(const std::string &path) {
     std::ifstream file;
     file.open(path);
+
+    if (!file.good())
+        throw std::runtime_error(std::string("Could not open file : ") + path);
     std::stringstream buffer;
     buffer << file.rdbuf();
     return buffer.str();
 }
 
 std::unique_ptr<Shader> makeShaderFromFile(const std::string &vertexPath, const std::string &fragmentPath) {
-    return std::make_unique<Shader>(readFile(vertexPath), readFile(fragmentPath));
+    std::string vertexCode = readFile(vertexPath);
+    std::string fragmentCode = readFile(fragmentPath);
+    return makeShaderFromSource(vertexCode, fragmentCode);
 }
 
 std::unique_ptr<Shader> makeShaderFromSource(const std::string &vertexSource, const std::string &fragmentSource) {
