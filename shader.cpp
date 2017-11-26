@@ -35,6 +35,7 @@ std::string readFile(const std::string &path) {
         throw std::runtime_error(std::string("Could not open file : ") + path);
     std::stringstream buffer;
     buffer << file.rdbuf();
+
     return buffer.str();
 }
 

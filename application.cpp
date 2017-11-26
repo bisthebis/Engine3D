@@ -41,7 +41,6 @@ bool Application::init() {
 
     glClearColor(0, 0.5, 1.0, 1.0);
 
-
     //Init VBO
     glGenBuffers(2, VBO);
 
@@ -126,6 +125,7 @@ int Application::run() {
 void Application::processEvent(const sf::Event &event) {
 
     switch (event.type) {
+
     case sf::Event::Closed:
         window->close();
         break;
