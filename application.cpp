@@ -41,9 +41,6 @@ bool Application::init() {
 
     glClearColor(0, 0.5, 1.0, 1.0);
 
-    //Init VBO
-    glGenBuffers(2, VBO);
-
     //Vertices
     float vertices[] = {
         -0.5f, -0.5f, 1.0f,
@@ -51,8 +48,7 @@ bool Application::init() {
          0.0f,  0.5f, 1.0f
     };
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    VBO[0] = createArrayBuffer(vertices, sizeof(vertices));
 
     //Colors
     float colors[] = {
@@ -61,18 +57,17 @@ bool Application::init() {
         0, 0, 1,
     };
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+    VBO[1] = createArrayBuffer(colors, sizeof(vertices));
 
     //Create VAO and do the bindings
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0].id());
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1].id());
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
 
@@ -150,6 +145,5 @@ void Application::processEvent(const sf::Event &event) {
 }
 
 void Application::cleanup() {
-    glDeleteBuffers(2, VBO);
     glDeleteVertexArrays(1, &VAO);
 }

@@ -21,33 +21,40 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#ifndef APPLICATION_H
-#define APPLICATION_H
-
-#include <SFML/Window.hpp>
-#include <memory>
-#include <glm/mat4x4.hpp>
-#include "shader.h"
 #include "vertexbuffer.h"
+#include <glad/glad.h>
 
-class Application
-{
+VertexBuffer::VertexBuffer() : enabled(false) {}
 
-public:
-    Application();
-    int run();
+VertexBuffer::VertexBuffer(unsigned int id) : _id(id)
+{}
 
-private:
-    bool init();
-    void draw();
-    void processEvent(const sf::Event& e);
-    void cleanup();
+VertexBuffer::~VertexBuffer() {
+    if (enabled)
+        glDeleteBuffers(1, &_id);
+}
 
-    std::unique_ptr<sf::Window> window;
-    std::unique_ptr<Shader> shader;
-    VertexBuffer VBO[2];
-    unsigned int VAO;
-    glm::mat4 projection;
-};
+unsigned int VertexBuffer::id() const {
+    return enabled ? _id : 0;
+}
 
-#endif // APPLICATION_H
+VertexBuffer::VertexBuffer(VertexBuffer &&rhs) {
+    _id = rhs.id();
+    this->enabled = rhs.enabled;
+    rhs.enabled = false;
+}
+
+VertexBuffer& VertexBuffer::operator =(VertexBuffer&& rhs) {
+    _id = rhs.id();
+    this->enabled = rhs.enabled;
+    rhs.enabled = false;
+}
+
+VertexBuffer createArrayBuffer(float *data, unsigned int size) {
+    unsigned int id;
+    glGenBuffers(1, &id);
+    glBindBuffer(GL_ARRAY_BUFFER, id);
+    glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+
+    return VertexBuffer(id);
+}

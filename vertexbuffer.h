@@ -21,33 +21,33 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#ifndef VERTEXBUFFER_H
+#define VERTEXBUFFER_H
 
-#include <SFML/Window.hpp>
-#include <memory>
-#include <glm/mat4x4.hpp>
-#include "shader.h"
-#include "vertexbuffer.h"
 
-class Application
+class VertexBuffer
 {
-
 public:
-    Application();
-    int run();
-
+    VertexBuffer(); //Create an empty, disabled buffer
+    VertexBuffer(unsigned int id);
+    VertexBuffer(const VertexBuffer&) = delete; //Non-copyable, but movable
+    VertexBuffer(VertexBuffer && rhs);
+    VertexBuffer& operator=(const VertexBuffer &) = delete;
+    VertexBuffer& operator=(VertexBuffer && rhs);
+    ~VertexBuffer();
+    unsigned int id() const;
 private:
-    bool init();
-    void draw();
-    void processEvent(const sf::Event& e);
-    void cleanup();
-
-    std::unique_ptr<sf::Window> window;
-    std::unique_ptr<Shader> shader;
-    VertexBuffer VBO[2];
-    unsigned int VAO;
-    glm::mat4 projection;
+    unsigned int _id;
+    bool enabled = true;
 };
 
-#endif // APPLICATION_H
+/**
+ * @brief create a VBO of type ARRAY_BUFFER
+ * @param data : pointer to the raw data
+ * @param size
+ * @return a VBO
+ * @pre size >= size of data
+ */
+VertexBuffer createArrayBuffer(float* data, unsigned int size);
+
+#endif // VERTEXBUFFER_H
