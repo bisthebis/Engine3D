@@ -128,6 +128,9 @@ void Application::processEvent(const sf::Event &event) {
     case sf::Event::Closed:
         window->close();
         break;
+    case sf::Event::KeyPressed:
+        if (event.key.code == sf::Keyboard::Escape)
+            window->close();
     case sf::Event::Resized:
     {
         float w = float(event.size.width);
