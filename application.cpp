@@ -86,7 +86,6 @@ bool Application::init() {
 
     //Init projection
     projection = glm::ortho(-1.f, 1.0f, -1.0f, 1.0f, -1.0f, 1.f);
-    //projection = glm::ortho(-1.f, 1.0f, -1.0f, 1.0f);
 
     return true;
 }
