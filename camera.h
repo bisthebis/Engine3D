@@ -31,6 +31,9 @@ SOFTWARE.
  * @brief Class holding a camera in 3D world (with a position and a direction)
  * @invariant getDirection().length() == 1
  * @invariant getView() == glm::lookAt(pos, dir, {0, 1, 0})
+ * @invariant Angles and direction match.
+ * @invariant Phi is in range [-pi/2, pi/2]
+ * @invariant Theta is in range [-pi, pi]
  *
  */
 class Camera
@@ -45,12 +48,20 @@ public:
     void setPosition(glm::vec3 newPos); //Doesn't change direction (=> target changes)
     void lookAt(glm::vec3 target);
 
+    void rotateY(float rad); //négative -> on the left
+
 private:
     glm::vec3 pos;
     glm::vec3 dir;
 
+    //Radians !
+    float theta; //Theta is angle between x and z, starting from x;
+    float phi; //Angle between x and y, starting from x;
+
     glm::mat4 cache;
     void computeMatrix();
+    void computeDirFromAngles();
+    void computeAnglesFromDir();
 
 };
 

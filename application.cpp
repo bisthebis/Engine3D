@@ -102,6 +102,8 @@ bool Application::init() {
     //Init projection
     updateProjection();
     model = glm::mat4(1.0);
+    cam.setPosition({0,0,0});
+    cam.lookAt(glm::vec3(1,0,0));
 
     return true;
 }
@@ -169,5 +171,6 @@ void Application::cleanup() {
 }
 
 void Application::update(float dt) {
-    model = glm::rotate(model, glm::radians(60.f * dt), {0,1, 0});
+    //model = glm::rotate(model, glm::radians(60.f * dt), {0,1, 0});
+    cam.rotateY(glm::radians(180.f * dt));
 }

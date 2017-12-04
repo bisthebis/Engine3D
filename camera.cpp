@@ -45,8 +45,42 @@ void Camera::lookAt(glm::vec3 target) {
 
     dir = glm::normalize(target - pos);
     computeMatrix();
+    computeAnglesFromDir();
+}
+
+void Camera::rotateY(float rad) {
+    theta += rad;
+
+    //Invariant check
+    if (theta > M_PI)
+        theta -= 2.f * M_PI;
+    else  if (theta < -M_PI)
+        theta += 2.f * M_PI;
+
+    computeDirFromAngles();
+    computeMatrix();
 }
 
 void Camera::setPosition(glm::vec3 newPos) {
     pos = newPos;
+    computeMatrix();
+    computeAnglesFromDir();
+}
+
+void Camera::computeDirFromAngles() {
+    dir.x = cos (theta) * cos (phi);
+    dir.y = sin (phi);
+    dir.z = sin (theta) * cos (phi);
+    dir = glm::normalize(dir); //Just in case;
+}
+
+void Camera::computeAnglesFromDir() {
+    //CHECK INVARIANT : Length of Dir is 1
+    float length_2_delta = glm::dot(dir, dir) - 1;
+    length_2_delta = length_2_delta > 0 ? length_2_delta : -length_2_delta;
+    assert (length_2_delta < 0.01);
+
+
+    phi = asin(dir.y);
+    theta = acos(dir.x/sqrt(1 - dir.y*dir.y));
 }
