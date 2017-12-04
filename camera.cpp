@@ -64,11 +64,11 @@ void Camera::rotateTheta(float rad) {
 void Camera::rotatePhi(float rad) {
     phi += rad;
 
-    //Invariant check
-    if (theta > M_PI_2)
-        theta -= M_PI;
-    else  if (theta < -M_PI_2)
-        theta += M_PI;
+    //Invariant check. If we go beyond 90°, we cap
+    if (phi > M_PI_2)
+        phi = M_PI_2;
+    else  if (phi < -M_PI_2)
+        phi = -M_PI_2;
 
     computeDirFromAngles();
     computeMatrix();
