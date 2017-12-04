@@ -29,6 +29,25 @@ SOFTWARE.
 #include <glm/gtc/matrix_transform.hpp>
 
 
+inline static void getProjection(glm::mat4& target, float width, float height, bool orthographic = false, const float zFar = 50.0f)
+{
+        if(!orthographic)
+            target = glm::perspective(45.0f, width/height, 0.1f, zFar);
+        else
+            {
+                float ratio = width / height;
+                if(ratio >= 1)
+                target = glm::ortho(-2.0f * ratio, 2.0f * ratio, -2.0f, 2.0f, -2.0f, zFar);
+                else
+                target = glm::ortho(-2.0f, 2.0f, -2.0f / ratio, 2.0f / ratio, -2.0f, zFar);
+            }
+}
+
+void Application::updateProjection() {
+    getProjection(projection, window->getSize().x, window->getSize().y);
+}
+
+
 Application::Application() : projection(1.0)
 {
 }
@@ -40,6 +59,7 @@ bool Application::init() {
     }
 
     glClearColor(0, 0.5, 1.0, 1.0);
+    glDisable(GL_CULL_FACE);
 
     VertexBuffer VBO[2];
 
@@ -80,7 +100,7 @@ bool Application::init() {
     glUseProgram(shader->getProgramId());
 
     //Init projection
-    projection = glm::ortho(-1.f, 1.0f, -1.0f, 1.0f, -1.0f, 1.f);
+    updateProjection();
     model = glm::mat4(1.0);
 
     return true;
@@ -133,15 +153,8 @@ void Application::processEvent(const sf::Event &event) {
             window->close();
     case sf::Event::Resized:
     {
-        float w = float(event.size.width);
-        float h = float(event.size.height);
-        float ratio = w/h;
+        updateProjection();
         glViewport(0, 0, event.size.width, event.size.height);
-        if (ratio > 1)
-            projection = glm::ortho(-ratio, ratio, -1.f, 1.f, -10.0f, 10.0f);
-        else
-            projection = glm::ortho(-1.f, 1.f, -1.f/ratio, 1.f/ratio, -10.0f, 10.0f);
-
     }
         break;
     default:
@@ -153,5 +166,5 @@ void Application::cleanup() {
 }
 
 void Application::update(float dt) {
-    model = glm::rotate(model, glm::radians(30.f * dt), {0,1, 0});
+    model = glm::rotate(model, glm::radians(180.f * dt), {1,1, 0});
 }

@@ -44,6 +44,7 @@ private:
     void processEvent(const sf::Event& e);
     void cleanup();
     void update(float dt); //seconds
+    void updateProjection();
 
     std::unique_ptr<sf::Window> window;
     std::unique_ptr<Shader> shader;
