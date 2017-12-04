@@ -172,5 +172,6 @@ void Application::cleanup() {
 
 void Application::update(float dt) {
     //model = glm::rotate(model, glm::radians(60.f * dt), {0,1, 0});
-    cam.rotateY(glm::radians(180.f * dt));
+    cam.rotateTheta(glm::radians(180.f * dt));
+    cam.rotatePhi(glm::radians(180.f * dt));
 }

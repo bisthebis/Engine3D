@@ -48,7 +48,7 @@ void Camera::lookAt(glm::vec3 target) {
     computeAnglesFromDir();
 }
 
-void Camera::rotateY(float rad) {
+void Camera::rotateTheta(float rad) {
     theta += rad;
 
     //Invariant check
@@ -56,6 +56,19 @@ void Camera::rotateY(float rad) {
         theta -= 2.f * M_PI;
     else  if (theta < -M_PI)
         theta += 2.f * M_PI;
+
+    computeDirFromAngles();
+    computeMatrix();
+}
+
+void Camera::rotatePhi(float rad) {
+    phi += rad;
+
+    //Invariant check
+    if (theta > M_PI_2)
+        theta -= M_PI;
+    else  if (theta < -M_PI_2)
+        theta += M_PI;
 
     computeDirFromAngles();
     computeMatrix();

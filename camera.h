@@ -48,7 +48,8 @@ public:
     void setPosition(glm::vec3 newPos); //Doesn't change direction (=> target changes)
     void lookAt(glm::vec3 target);
 
-    void rotateY(float rad); //négative -> on the left
+    void rotateTheta(float rad); //négative -> on the left
+    void rotatePhi(float rad); // Négative -> Lower
 
 private:
     glm::vec3 pos;
