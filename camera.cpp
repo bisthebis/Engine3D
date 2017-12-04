@@ -21,39 +21,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#ifndef APPLICATION_H
-#define APPLICATION_H
-
-#include <SFML/Window.hpp>
-#include <memory>
-#include <glm/mat4x4.hpp>
-#include "shader.h"
-#include "vertexbuffer.h"
-#include "vertexarray.h"
 #include "camera.h"
+#include <glm/vec3.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <stdexcept>
 
-class Application
+Camera::Camera() : pos(1,1,1)
 {
+    lookAt(glm::vec3{0,0,0});
+}
 
-public:
-    Application();
-    int run();
+glm::vec3 Camera::getPos() const {return pos;}
+glm::vec3 Camera::getDirection() const {return dir;}
+const glm::mat4& Camera::getView() const {return cache;}
 
-private:
-    bool init();
-    void draw();
-    void processEvent(const sf::Event& e);
-    void cleanup();
-    void update(float dt); //seconds
-    void updateProjection();
+void Camera::computeMatrix() {
+    cache = glm::lookAt(pos, dir, {0, 1, 0});
+}
 
-    std::unique_ptr<sf::Window> window;
-    std::unique_ptr<Shader> shader;
-    VertexArray VAO;
-    glm::mat4 projection;
-    glm::mat4 model;
-    sf::Clock time;
-    Camera cam;
-};
+void Camera::lookAt(glm::vec3 target) {
+    if (target == pos)
+        throw std::runtime_error("Camera tries to look at itself");
 
-#endif // APPLICATION_H
+    dir = glm::normalize(target - pos);
+    computeMatrix();
+}
+
+void Camera::setPosition(glm::vec3 newPos) {
+    pos = newPos;
+}

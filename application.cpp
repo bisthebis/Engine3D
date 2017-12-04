@@ -115,6 +115,9 @@ void Application::draw() {
     unsigned int modelLocation = glGetUniformLocation(shader->getProgramId(), "model");
     glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 
+    unsigned int cameraLocation = glGetUniformLocation(shader->getProgramId(), "view");
+    glUniformMatrix4fv(cameraLocation, 1, GL_FALSE, glm::value_ptr(cam.getView()));
+
     VAO.bind();
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -166,5 +169,5 @@ void Application::cleanup() {
 }
 
 void Application::update(float dt) {
-    model = glm::rotate(model, glm::radians(180.f * dt), {1,1, 0});
+    model = glm::rotate(model, glm::radians(60.f * dt), {0,1, 0});
 }

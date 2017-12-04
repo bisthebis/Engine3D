@@ -21,39 +21,37 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#ifndef CAMERA_H
+#define CAMERA_H
 
-#include <SFML/Window.hpp>
-#include <memory>
 #include <glm/mat4x4.hpp>
-#include "shader.h"
-#include "vertexbuffer.h"
-#include "vertexarray.h"
-#include "camera.h"
 
-class Application
+
+/**
+ * @brief Class holding a camera in 3D world (with a position and a direction)
+ * @invariant getDirection().length() == 1
+ * @invariant getView() == glm::lookAt(pos, dir, {0, 1, 0})
+ *
+ */
+class Camera
 {
-
 public:
-    Application();
-    int run();
+    Camera();
+
+    const glm::mat4& getView() const;
+    glm::vec3 getPos() const;
+    glm::vec3 getDirection() const;
+
+    void setPosition(glm::vec3 newPos); //Doesn't change direction (=> target changes)
+    void lookAt(glm::vec3 target);
 
 private:
-    bool init();
-    void draw();
-    void processEvent(const sf::Event& e);
-    void cleanup();
-    void update(float dt); //seconds
-    void updateProjection();
+    glm::vec3 pos;
+    glm::vec3 dir;
 
-    std::unique_ptr<sf::Window> window;
-    std::unique_ptr<Shader> shader;
-    VertexArray VAO;
-    glm::mat4 projection;
-    glm::mat4 model;
-    sf::Clock time;
-    Camera cam;
+    glm::mat4 cache;
+    void computeMatrix();
+
 };
 
-#endif // APPLICATION_H
+#endif // CAMERA_H
