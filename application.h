@@ -43,11 +43,14 @@ private:
     void draw();
     void processEvent(const sf::Event& e);
     void cleanup();
+    void update(float dt); //seconds
 
     std::unique_ptr<sf::Window> window;
     std::unique_ptr<Shader> shader;
     VertexArray VAO;
     glm::mat4 projection;
+    glm::mat4 model;
+    sf::Clock time;
 };
 
 #endif // APPLICATION_H

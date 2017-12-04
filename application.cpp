@@ -81,6 +81,7 @@ bool Application::init() {
 
     //Init projection
     projection = glm::ortho(-1.f, 1.0f, -1.0f, 1.0f, -1.0f, 1.f);
+    model = glm::mat4(1.0);
 
     return true;
 }
@@ -90,6 +91,9 @@ void Application::draw() {
 
     unsigned int projectionLocation = glGetUniformLocation(shader->getProgramId(), "projection");
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
+
+    unsigned int modelLocation = glGetUniformLocation(shader->getProgramId(), "model");
+    glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 
     VAO.bind();
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -105,6 +109,7 @@ int Application::run() {
     while (window->isOpen())
     {
         sf::Event event;
+        this->update(time.restart().asSeconds());
         while (window->pollEvent(event))
         {
             processEvent(event);
@@ -133,9 +138,9 @@ void Application::processEvent(const sf::Event &event) {
         float ratio = w/h;
         glViewport(0, 0, event.size.width, event.size.height);
         if (ratio > 1)
-            projection = glm::ortho(-ratio, ratio, -1.f, 1.f, -1.0f, 1.0f);
+            projection = glm::ortho(-ratio, ratio, -1.f, 1.f, -10.0f, 10.0f);
         else
-            projection = glm::ortho(-1.f, 1.f, -1.f/ratio, 1.f/ratio, -1.0f, 1.0f);
+            projection = glm::ortho(-1.f, 1.f, -1.f/ratio, 1.f/ratio, -10.0f, 10.0f);
 
     }
         break;
@@ -145,4 +150,8 @@ void Application::processEvent(const sf::Event &event) {
 }
 
 void Application::cleanup() {
+}
+
+void Application::update(float dt) {
+    model = glm::rotate(model, glm::radians(30.f * dt), {0,1, 0});
 }
