@@ -1,0 +1,4 @@
+Doxyfile
+doc/*
+CMakeLists.txt.user
+build/*
