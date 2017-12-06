@@ -53,6 +53,7 @@ VertexArray& VertexArray::operator=(VertexArray &&rhs) {
 void VertexArray::initEmpty() {
     if (enabled) {
         glDeleteVertexArrays(1, &vao);
+        vbos.clear(); //Destroys the VBOs and call their destructor
     }
 
     glGenVertexArrays(1, &vao);
